@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.home.mapper.SoftwareDWMapper">
+
+
+    <select id="selectForInit" resultType="com.example.home.electronic_port.entity.CommodityCodeDO">
+        SELECT CODE     AS 'code',
+               ZSSL_SET AS 'taxRate',
+               TSL      AS 'rebateRate',
+               ST_DATE  AS 'startDate',
+               END_DATE AS 'endDate'
+        FROM cmcode
+        WHERE BCFLAG = '*'
+          AND SZ = 'V'
+          AND ST_DATE <![CDATA[>=]]> #{firstDay}
+    </select>
+
+</mapper>

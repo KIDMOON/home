@@ -1,0 +1,202 @@
+# tomcat
+server:
+  port: 12345
+  servlet:
+    context-path: /
+  tomcat:
+    max-http-post-size: 10MB
+    max-connections: 10000
+    max-threads: 200
+    min-spare-threads: 10
+    accesslog:
+      enabled: false
+      rotate: true
+      rename-on-rotate: true
+      directory: ${fm-log.home}/${fm-log.module}/tomcat
+
+# fm system custom properties
+fm-core:
+  mvc:
+    login: /login.html
+    index: /index.html
+  i18n:
+    support-locales: zh_CN,en_US
+  persistence:
+      global-param-enabled: false
+  message:
+    debug: true
+    threads: 1
+    thread-sleep-interval: 1
+    callback-threads: 1
+    callback-thread-sleep-interval: 10
+    web-socket-on: true
+    site:
+      enabled: true
+    email:
+      enabled: true
+      allowed-tpl-codes:
+  auditing:
+    ip-block-enabled: true
+    malicious-ip-max: 2000
+    malicious-ip-time: 300
+    exclude-ip-set: 127.0.0.1
+# kisso
+kisso:
+  config:
+    cookieName: uid
+    cookieMaxage: 15552000 #180days
+
+file:
+  generate-thumbnail: true
+  check-file-access-login: true
+  access-login-filter-pattern: /files/*
+  mapped-static-files:  # pattern | path
+    - /** | classpath:/static/
+    - /static/** | classpath:/static/static/
+    - /favicon.ico | classpath:/static/favicon.ico
+    - /files/** | file:${user.dir}/upload/
+  upload-path: upload/
+  upload-static-path: /files/
+  allowed-suffix: txt,doc,docx,xls,xlsx,csv,ppt,pptx,pdf,gif,jpg,png,ico,svg,swf,dwg,mp3,mp4,flv,rmvb,rar,zip
+
+# mybatis-plus
+# [https://mp.baomidou.com/guide/wrapper.html#abstractwrapper]
+# [https://mp.baomidou.com/guide/wrapper.html#querywrapper]
+# [https://mp.baomidou.com/guide/wrapper.html#updatewrapper]
+mybatis-plus:
+  check-config-location: true
+  mapper-locations: classpath*:com/example/home/mapper/*.xml
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  plugin:
+    performance:
+      open: false
+      maxTime: 100
+  configuration:
+    default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler
+
+# spring flyway
+# spring datasource
+db:
+  host: 47.103.36.59
+  port: 3306
+  name: xw
+  param: useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8&useSSL=false
+spring:
+  application:
+    name: kid
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${db.host}:${db.port}/${db.name}?${db.param}
+    username: zmg
+    password: aBzmg668@
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 10
+      max-lifetime: 55000
+      connection-timeout: 30000
+  messages:
+    basename: i18n.message
+    encoding: UTF-8
+  flyway: # flyway version format : 1.0.0.0
+    enabled: true
+    out-of-order: true
+    clean-disabled: true
+    check-location: true
+    ignore-missing-migrations: true
+    validate-on-migrate: false
+    baseline-on-migrate: true
+    baseline-version: 1.0.0.0
+    table: flyway_db
+    locations: classpath:db/migration, classpath:cn.facilityone.fm.core.migration
+    installed-by: FacilityONE
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 1000MB
+      location: ${fm-log.home}/multipart/ #The folder must be exist
+  freemarker:
+    enabled: true
+    check-template-location: false
+    template-loader-path: classpath:/static/
+    suffix: .ftl
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+  info:
+    git:
+      encoding:
+  boot:
+    admin:
+      client:
+        url: http://127.0.0.1:8101
+        password: 123456
+        username: macro
+
+
+security:
+  check-login: true
+  check-permission: true
+  check-captcha: false
+  check-password: true
+  check-password-error-count: false
+  client-cookie-name: kid
+  expire-password-error-count: 120
+  max-password-error-count: 10
+  check-auth: true
+  token-expire: 7200
+  token-extra-expire: 60
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+      limit: 100
+  remote:
+    default:
+      type: redis.lettuce
+      keyConvertor: fastjson
+      valueEncoder: java
+      valueDecoder: java
+      uri: redis://123456@${db.host}:6379/
+minio:
+  endpoint: http://47.103.36.59:9000
+  accessKey: zmg
+  secretKey: aBzmg668
+  filHost: http://file.songshijun.top
+  bucketName: home
+management: #开启SpringBoot Admin的监控
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+rocketmq:
+  name-server: http://192.168.1.179:9876
+  producer:
+    group: kid
+
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: satoken
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: true
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
